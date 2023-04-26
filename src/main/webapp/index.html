@@ -54,7 +54,6 @@
 
 <div id="add_new_post_form" class="container">
     <h2>Post Form</h2>
-    <form>
         <div class="form-group">
             <label for="post_authorInput">Author:</label>
             <input id="post_authorInput" name="post_authorInput" type="text" class="form-control"
@@ -71,7 +70,6 @@
                       placeholder="Enter post content"></textarea>
         </div>
         <button id="add_post_button" class="btn btn-primary">Submit Post</button>
-    </form>
 </div>
 
 
@@ -100,10 +98,10 @@
             <div id="comments_list">
 
                 <!---OVDEEEEEEEEEEEEEEEEEEEEEEEEEE UBACUJES KOMENTARE -->
-                <div>
+                <!--<div>
                     <h5>Comment Author</h5>
                     <p>Comment Text</p>
-                </div>
+                </div>-->
 
 
             </div>
@@ -134,12 +132,17 @@
 <script>
 
 
+    let page_index = -1;
 
 
 
-    display_posts();
-    let i = 0;
-    function display_posts() {
+    display_all_posts();
+
+
+    function display_all_posts() {
+
+        if(page_index >= 0)
+            display_post()
         // getting whole pages to display them manually
         const blog_posts_page = document.getElementById('blog_posts_page');
         blog_posts_page.style.display = 'block';
@@ -189,7 +192,7 @@
 
         const add_post_button = document.getElementById('add_post_button');
 
-        add_post_button.addEventListener('click', () => {
+        add_post_button.onclick = () => {
             fetch('blog/posts',
                 {
                     method: 'POST',
@@ -204,26 +207,27 @@
                     })
                 })
                 .then(response => {
-                    console.log(response.json())
-                    document.location.reload();
+                   // document.location.reload();
                     return response.json();
                 }).then(post => {
                 console.log(post);
-                display_posts();
+                window.location.reload()
+                //display_posts();
             })
-        })
+        };
     }
 
 
     function display_post(post) {
 
+        page_index = post.post_id;
         // getting whole pages to display them manually
         const blog_posts_page = document.getElementById('blog_posts_page');
         blog_posts_page.style.display = 'none';
 
         const post_preview_page = document.getElementById('post_preview_page');
         post_preview_page.style.display = 'block';
-
+//
         const post_title = document.getElementById('post_preview_title');
         post_title.innerText = post.post_title;
 
@@ -251,7 +255,8 @@
                     .then(response => {
                         return response.json()
                     }).then(comment => {
-                    document.getElementById("comments_list").appendChild(make_comment_element(comment));
+                    make_comment_element(comment);
+                    display_post(post)
                     comment_author.value = '';
                     comment_content.value = '';
                 })
@@ -262,7 +267,7 @@
                 return response.json()
             }).then(comments => {
                 for(const curr_comment of comments) {
-                    document.getElementById("comments_list").appendChild(make_comment_element(curr_comment));
+                   make_comment_element(curr_comment);
                 }
         })
 
@@ -295,18 +300,12 @@
     }
 
     function make_comment_element(comment) {
-
-        const author_element = document.createElement('h5');
-        author_element.innerText = comment.comment_author;
-
-        const comment_text_element = document.createComment('p');
-        comment_text_element.innerHTML = comment.comment_content;
-
-        const comment_element = document.createElement('div');
-        comment_element.appendChild(author_element);
-        comment_element.appendChild(comment_text_element)
-
-        return comment_element
+        const comment_list = document.getElementById("comments_list")
+        let html = ' <div>\n' +
+            '           <h5>' + comment.comment_author +'</h5>\n' +
+            '           <p>' + comment.comment_content + '</p>\n' +
+            '        </div>';
+        comment_list.innerHTML += html;
     }
 
 </script>
