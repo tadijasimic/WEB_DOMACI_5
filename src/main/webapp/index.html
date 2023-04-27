@@ -20,10 +20,12 @@
             width: 50%;
             margin: auto;
         }
+
         #add_new_post_form {
             width: 50%;
             margin: auto;
         }
+
         #post_preview_page {
             width: 50%;
             margin: auto;
@@ -34,7 +36,6 @@
         }
 
 
-
     </style>
 </head>
 <body>
@@ -42,9 +43,9 @@
 
 <!-- BLOG/POSTS main page-->
 <div id="blog_posts_page">
-    <h1 >My Blog</h1>
+    <h1>My Blog</h1>
     <h2>List of Posts</h2>
-    <div id="posts_list" class="list-group"> </div>
+    <div id="posts_list" class="list-group"></div>
     <button id="add_new_post_button" type="button" class="btn btn-primary btn-lg btn-block mt-3">New Post</button>
 
 </div>
@@ -54,22 +55,22 @@
 
 <div id="add_new_post_form" class="container">
     <h2>Post Form</h2>
-        <div class="form-group">
-            <label for="post_authorInput">Author:</label>
-            <input id="post_authorInput" name="post_authorInput" type="text" class="form-control"
-                   placeholder="Enter author name">
-        </div>
-        <div class="form-group">
-            <label for="post_titleInput">Title:</label>
-            <input id="post_titleInput" name="post_titleInput" type="text" class="form-control"
-                   placeholder="Enter post title">
-        </div>
-        <div class="form-group">
-            <label for="post_contentInput">Content:</label>
-            <textarea id="post_contentInput" name="post_contentInput" class="form-control" rows="5"
-                      placeholder="Enter post content"></textarea>
-        </div>
-        <button id="add_post_button" class="btn btn-primary">Submit Post</button>
+    <div class="form-group">
+        <label for="post_authorInput">Author:</label>
+        <input id="post_authorInput" name="post_authorInput" type="text" class="form-control"
+               placeholder="Enter author name">
+    </div>
+    <div class="form-group">
+        <label for="post_titleInput">Title:</label>
+        <input id="post_titleInput" name="post_titleInput" type="text" class="form-control"
+               placeholder="Enter post title">
+    </div>
+    <div class="form-group">
+        <label for="post_contentInput">Content:</label>
+        <textarea id="post_contentInput" name="post_contentInput" class="form-control" rows="5"
+                  placeholder="Enter post content"></textarea>
+    </div>
+    <button id="add_post_button" class="btn btn-primary">Submit Post</button>
 </div>
 
 
@@ -111,19 +112,17 @@
 
     <div id="add_new_comment_form" class="container">
         <h2>Add comment on post.</h2>
-        <form>
-            <div class="form-group">
-                <label for="authorInput">Author:</label>
-                <input id='add_comment_authorInput' type="text" class="form-control" id="authorInput"
-                       placeholder="Enter author name">
-            </div>
-            <div class="form-group">
-                <label for="contentInput">Content:</label>
-                <textarea id='add_comment_contentInput' class="form-control" id="contentInput" rows="5"
-                          placeholder="Enter post content"></textarea>
-            </div>
-            <button id="add_comment_button" type="submit" class="btn btn-primary">Submit Post</button>
-        </form>
+        <div class="form-group">
+            <label for="authorInput">Author:</label>
+            <input id='add_comment_authorInput' type="text" class="form-control" id="authorInput"
+                   placeholder="Enter author name">
+        </div>
+        <div class="form-group">
+            <label for="contentInput">Content:</label>
+            <textarea id='add_comment_contentInput' class="form-control" id="contentInput" rows="5"
+                      placeholder="Enter post content"></textarea>
+        </div>
+        <button id="add_comment_button" type="submit" class="btn btn-primary">Submit Post</button>
     </div>
 
 
@@ -132,17 +131,11 @@
 <script>
 
 
-    let page_index = -1;
-
-
-
     display_all_posts();
 
 
     function display_all_posts() {
 
-        if(page_index >= 0)
-            display_post()
         // getting whole pages to display them manually
         const blog_posts_page = document.getElementById('blog_posts_page');
         blog_posts_page.style.display = 'block';
@@ -154,17 +147,21 @@
         post_preview_page.style.display = 'none';
 
         //adding all the posts to the page
-        const posts_list = document.getElementById('posts_list');
         fetch('blog/posts', {method: 'GET'})
             .then(response => {
                 return response.json()
             }).then(posts => {
+
+            const posts_list = document.getElementById('posts_list');
+            posts_list.innerHTML = '';
             for (const curr_post of posts) {
 
                 const post_element = make_post_element(curr_post);
                 post_element.addEventListener('click', () => display_post(curr_post));
-                posts_list.appendChild(post_element);
                 post_element.appendChild(document.createElement('br'));
+
+                posts_list.appendChild(post_element);
+                posts_list.appendChild(document.createElement('br'));
             }
 
             const new_post_button = document.getElementById('add_new_post_button');
@@ -207,12 +204,12 @@
                     })
                 })
                 .then(response => {
-                   // document.location.reload();
+                    // document.location.reload();
                     return response.json();
                 }).then(post => {
                 console.log(post);
-                window.location.reload()
-                //display_posts();
+                //window.location.reload()
+                display_all_posts();
             })
         };
     }
@@ -220,7 +217,6 @@
 
     function display_post(post) {
 
-        page_index = post.post_id;
         // getting whole pages to display them manually
         const blog_posts_page = document.getElementById('blog_posts_page');
         blog_posts_page.style.display = 'none';
@@ -238,7 +234,7 @@
         post_content.innerText = post.post_content;
 
         const add_comment_button = document.getElementById("add_comment_button");
-        add_comment_button.addEventListener('click',
+        add_comment_button.onclick =
             () => {
                 const comment_author = document.getElementById('add_comment_authorInput');
                 const comment_content = document.getElementById('add_comment_contentInput');
@@ -256,25 +252,22 @@
                         return response.json()
                     }).then(comment => {
                     make_comment_element(comment);
-                    display_post(post)
                     comment_author.value = '';
                     comment_content.value = '';
                 })
-            });
+            };
 
+        //document.getElementById("comments_list").innerHTML = '';
         fetch(`blog/posts/${post.post_id}/comments`, {method: 'GET'})
             .then(response => {
                 return response.json()
             }).then(comments => {
-                for(const curr_comment of comments) {
-                   make_comment_element(curr_comment);
-                }
+            for (const curr_comment of comments) {
+                make_comment_element(curr_comment);
+            }
         })
 
     }
-
-
-
 
 
     function make_post_element(post) {
@@ -302,7 +295,7 @@
     function make_comment_element(comment) {
         const comment_list = document.getElementById("comments_list")
         let html = ' <div>\n' +
-            '           <h5>' + comment.comment_author +'</h5>\n' +
+            '           <h5>' + comment.comment_author + '</h5>\n' +
             '           <p>' + comment.comment_content + '</p>\n' +
             '        </div>';
         comment_list.innerHTML += html;

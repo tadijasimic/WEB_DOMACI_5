@@ -25,8 +25,6 @@ public class BlogResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPosts() {
-        System.out.println("HTELOOOO JEEEEEEE");
-        System.out.flush();
         return Response.ok(postsService.getAllPosts()).build();
     }
 
